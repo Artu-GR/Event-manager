@@ -1,0 +1,87 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <!--[disabled] DEPENDE DEL ROL-->
+      <ion-button fill="outline" [disabled]="!verdadero"><ion-icon slot="end" name="add"></ion-icon>Crear evento</ion-button>
+    </ion-buttons>
+    <ion-title>
+      Eventos - UANL
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" sizeSm="6" sizeMd="3">
+        <ion-item>
+          <ion-select placeholder="Mes">
+            <ion-select-option *ngFor="let mes of meses ; let i = index" value="i">{{mes}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="12" sizeSm="6" sizeMd="3">
+        <ion-item>
+          <ion-select placeholder="Categoria">
+            <ion-select-option *ngFor="let cat of categorias ; let i = index" value="i">{{cat}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="12" sizeSm="6" sizeMd="3">
+        <ion-item>
+          <ion-input placeholder="Palabra clave"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col size="12" sizeSm="6" sizeMd="3">
+        <ion-button>Buscar<ion-icon name="search" slot="end"></ion-icon></ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col *ngFor="let cat of categorias ; let i = index" value="i" size="12" sizeMd="4">
+        <div class="EventCard">
+          <section class="CalendarSqaure">
+            <div class="calendar">
+              <div class="daySquare">
+                29
+              </div>
+              <div class="monthSquare">
+                MAY
+              </div>
+            </div>
+          </section>
+          <ion-card>
+            <!--el '1' SE DEBE CAMBIAR POR EL CAMPO id DEL EVENTO-->
+            <ion-card-header [routerLink]="['/event-details', 1]">
+              {{cat}}
+            </ion-card-header>
+            <ion-card-content>
+              <section class="EventDescription">
+                <ion-label>
+                  {{cat}}
+                </ion-label>
+              </section>
+              <section class="SocialMediaButtons">
+                <ion-buttons>
+                  <ion-button>
+                    <ion-icon name="logo-facebook"></ion-icon>
+                  </ion-button>
+                  <ion-button>
+                    <ion-icon name="logo-twitter"></ion-icon>
+                  </ion-button>
+                  <ion-button>
+                    <ion-icon name="mail-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </section>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

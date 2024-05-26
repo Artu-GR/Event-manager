@@ -1,0 +1,32 @@
+
+.EventCard{
+  border-radius: 10px;
+  border: 2px, solid;
+}
+
+.calendar{
+  margin: 5px;
+  float: left;
+  -ms-transform: translateY(35%);
+  transform: translateY(35%);
+}
+
+.daySquare{
+  padding: 5px;
+  color: rgb(16, 120, 218);
+  font-size: xx-large;
+}
+.monthSquare{
+  padding: 5px;
+  color: rgb(16, 120, 218);
+  background-color: rgb(228, 187, 7);
+}
+
+ion-card-header{
+  color: rgb(16, 120, 218);
+  font-size: large;
+}
+
+ion-card-header:hover{
+  text-decoration: underline;
+}

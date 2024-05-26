@@ -1,0 +1,7 @@
+{
+  "name": "PIA_BaseDeDatos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
