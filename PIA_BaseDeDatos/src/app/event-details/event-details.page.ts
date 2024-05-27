@@ -86,7 +86,7 @@ export class EventDetailsPage implements OnInit {
       return;
     }
     this.apiService.createTicket(this.eventId, this.correoUsuario, this.event.precio).subscribe(response => {
-      console.log('Ticket creado:', response);
+      console.log('Ticket creado:', response);     
       // Aquí puedes agregar la lógica adicional para manejar la respuesta, como mostrar una notificación al usuario
     }, error => {
       console.error('Error al crear el ticket', error);
@@ -97,7 +97,6 @@ export class EventDetailsPage implements OnInit {
     }, error => {
       console.error("Error al actualizar el metodo de pago", error);
     })
-
     this.setModalOpen(false);
   }
 

@@ -9,7 +9,7 @@ export class NuevoeventoService {
 
   constructor(private http: HttpClient) { }
 
-  private apiUrl = 'http://localhost:3030/api/evento';
+  private apiUrl = 'http://localhost:3036/api/evento';
 
   crearEvento(evento: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, evento);

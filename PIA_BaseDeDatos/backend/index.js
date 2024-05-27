@@ -2,8 +2,20 @@ const express = require('express');
 const sql = require('mssql/msnodesqlv8');
 const cors = require('cors'); // Importar el paquete cors
 const bwipjs = require('bwip-js');
+const nodemailer = require('nodemailer');
+const filePath = './boletos/boleto.png';
 const app = express();
-const port = 3030;
+const port = 3036;
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: 'gallomakuin68@gmail.com', // Tu correo de Gmail
+    pass: 'fltt smwt kftu wstu'       // Tu contraseña de Gmail
+  }
+});
 
 // Habilitar CORS para todas las solicitudes
 app.use(cors());
@@ -123,6 +135,7 @@ sql.connect(dbConfig).then(pool => {
     }
   });
 
+  //QUIERO QUE SE ENVIE UN CORREO AQUI
   // Endpoint para crear un nuevo boleto
   app.post('/api/createTicket', async (req, res) => {
     try {
@@ -152,6 +165,32 @@ sql.connect(dbConfig).then(pool => {
         .query('INSERT INTO boleto (eventoId, participanteId, codigoDeBarras, foto, precio) VALUES (@eventoId, @participanteId, @codigoDeBarras, @foto, @precio)');
       
       // Enviar la respuesta con el boletoId generado
+
+      const mailOptions = {
+        from: 'gallomakuin68@gmail.com',
+        to: userMail,
+        subject: '¡Tu boleto para el evento ya llegó!',
+        text: 'Deberás utilizar este boleto para ingresar al evento.',
+        html: '<p>Adjunto encontrarás tu boleto para el evento.</p>',
+        attachments: [
+          {
+            filename: 'boleto.png', // Nombre del archivo adjunto
+            content: codigoDeBarras, // Contenido del archivo, en este caso el código de barras como imagen
+            encoding: 'base64' // Codificación base64
+          }
+        ]
+      };
+
+      transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+          console.error('Error al enviar el correo electrónico:', error);
+          res.status(500).json({ success: false, error: 'Error al enviar el correo electrónico' });
+        } else {
+          console.log('Correo electrónico enviado:', info.response);
+          res.json({ success: true, message: 'Boleto creado y enviado exitosamente' });
+        }
+      });
+
       res.json({ success: true, message: 'Boleto creado exitosamente', boletoId: result.recordset[0].boletoId });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
