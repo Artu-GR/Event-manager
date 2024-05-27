@@ -9,13 +9,62 @@
 
 <ion-content [fullscreen]="true">
   
-  <div class="content">
-    <ion-label>Titulo del evento</ion-label>
+  <div class="left">
 
-    <!--DESCRIPCION-->
+    <ion-title>{{event.nombre}}</ion-title>
+
+    <ion-label>{{event.descripcion}}</ion-label>
+    
 
   </div>
 
-  <ion-label>{{eventId}}</ion-label>
+  <div class="right">
+    <section>
+      ¿Dónde?
+      <ion-label>{{event.ubicacion}}</ion-label>
+    </section>
+    <section>
+      ¿Cuándo?
+      <ion-label>{{event.dia}} de {{event.mes}} - {{year}}</ion-label>
+    </section>
+    <section>
+      Dependencia
+      <ion-label>{{dependencias[event.dependenciaId-2]}}</ion-label>
+    </section>
+    <section>
+      Categoria
+      <ion-label>{{categorias[event.categoriaId-3]}}</ion-label>
+    </section>
+    <section>
+      Costo
+      <ion-label *ngIf="event.precio === 0">No tiene costo.</ion-label>
+      <ion-label *ngIf="event.precio != 0">{{event.precio}}</ion-label>
+    </section>
+  </div>
+
+  <ion-button (click)="setModalOpen(true)">Registrarse al evento</ion-button>
 
 </ion-content>
+
+<ion-modal [isOpen]="isOpen">
+
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Registrarse a un evento</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setModalOpen(false)">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form #registro="ngForm" (ngSubmit)="registroEvento()">
+
+        <ion-input name="nombre" label="Correo:" label-placement="floating" fill="outline" placeholder="Ingrese tu correo" [(ngModel)]="correoUsuario"></ion-input>
+    
+        <ion-button type="submit">¡Registrarme!</ion-button>
+    
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

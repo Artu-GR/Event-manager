@@ -27,7 +27,11 @@
     "@capacitor/keyboard": "6.0.0",
     "@capacitor/status-bar": "6.0.0",
     "@ionic/angular": "^8.0.0",
+    "bwip-js": "^4.3.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
     "ionicons": "^7.0.0",
+    "mssql": "^10.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"

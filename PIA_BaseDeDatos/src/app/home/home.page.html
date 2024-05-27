@@ -1,8 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="end">
-      <!--[disabled] DEPENDE DEL ROL-->
-      <ion-button fill="outline" [disabled]="!verdadero"><ion-icon slot="end" name="add"></ion-icon>Crear evento</ion-button>
+      <ion-button fill="outline" [disabled]="!CreateEventPermit.includes(userLogged.rolId)" (click)="setOpen(true)" *ngIf="sesionIniciada">
+        <ion-icon slot="end" name="add"></ion-icon>Crear evento
+      </ion-button>
+      <ion-button fill="outline" (click)="setOpen2(true)" *ngIf="!sesionIniciada">
+        <ion-icon slot="end" name="person-outline"></ion-icon>Iniciar Sesion
+      </ion-button>
     </ion-buttons>
     <ion-title>
       Eventos - UANL
@@ -16,25 +20,26 @@
     <ion-row>
       <ion-col size="12" sizeSm="6" sizeMd="3">
         <ion-item>
-          <ion-select placeholder="Mes">
-            <ion-select-option *ngFor="let mes of meses ; let i = index" value="i">{{mes}}</ion-select-option>
+          <ion-select #select1 placeholder="Mes" name="MONTH" [(ngModel)]="MONTH">
+            <ion-select-option *ngFor="let mes of meses ; let i = index" [value]="mes">{{mes}}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
       <ion-col size="12" sizeSm="6" sizeMd="3">
         <ion-item>
-          <ion-select placeholder="Categoria">
-            <ion-select-option *ngFor="let cat of categorias ; let i = index" value="i">{{cat}}</ion-select-option>
+          <ion-select #select2 placeholder="Categoria" name="CATEGORY" [(ngModel)]="CATEGORY">
+            <ion-select-option *ngFor="let cat of categorias ; let i = index" [value]="i+3">{{cat}}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
       <ion-col size="12" sizeSm="6" sizeMd="3">
         <ion-item>
-          <ion-input placeholder="Palabra clave"></ion-input>
+          <ion-input placeholder="Palabra clave" name="QUERY" [(ngModel)]="QUERY"></ion-input>
         </ion-item>
       </ion-col>
       <ion-col size="12" sizeSm="6" sizeMd="3">
-        <ion-button>Buscar<ion-icon name="search" slot="end"></ion-icon></ion-button>
+        <ion-button *ngIf="!filtered" (click)="filterResults()">Buscar<ion-icon name="search" slot="end"></ion-icon></ion-button>
+        <ion-button *ngIf="filtered" (click)="getEvents()">Limpiar filtros<ion-icon name="filter-outline" slot="end"></ion-icon></ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -42,27 +47,26 @@
   <ion-grid>
     <ion-row>
       <!--SE DEBE cat Y categorias POR evento Y eventos (SELECT * FROM EVENTOS)-->
-      <ion-col *ngFor="let cat of categorias ; let i = index" value="i" size="12" sizeMd="4">
+      <ion-col *ngFor="let ev of eventos ; let i = index" value="i" size="12" sizeMd="4">
         <div class="EventCard">
           <section class="CalendarSqaure">
             <div class="calendar">
               <div class="daySquare">
-                29
+                {{ev.dia}}
               </div>
               <div class="monthSquare">
-                MAY
+                {{ev.mes}}
               </div>
             </div>
           </section>
           <ion-card>
-            <!--el '1' SE DEBE CAMBIAR POR EL CAMPO id DEL EVENTO-->
-            <ion-card-header [routerLink]="['/event-details', 1]">
-              {{cat}}
+            <ion-card-header [routerLink]="['/event-details', ev.eventoId]">
+              {{ev.nombre}}
             </ion-card-header>
             <ion-card-content>
               <section class="EventDescription">
                 <ion-label>
-                  {{cat}}
+                  {{ev.descripcion}}
                 </ion-label>
               </section>
               <section class="SocialMediaButtons">
@@ -86,3 +90,97 @@
   </ion-grid>
 
 </ion-content>
+
+<ion-modal [isOpen]="isModalOpen2">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Inicio de sesion</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setOpen2(false)">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form #logInInfo="ngForm" (ngSubmit)="logIn()">
+        <ion-input name="correo" label="Correo:" label-placement="floating" fill="outline" placeholder="Ingrese el correo" [(ngModel)]="username"></ion-input>
+        <ion-input name="password" label="Contraseña:" type="password" label-placement="floating" fill="outline" placeholder="Ingrese la contraseña" [(ngModel)]="pass"></ion-input>
+        
+        <ion-label (click)="changeModal(1)">¿Aún no tienes cuenta? ¡Registrate aquí!</ion-label>
+        
+        <ion-button type="submit">Iniciar sesion</ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isModalOpen3">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Crear cuenta</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setOpen3(false)">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form #createAcount="ngForm" (ngSubmit)="createUser()">
+        <ion-input name="nombre" label="Nombre:" label-placement="floating" fill="outline" placeholder="Ingrese el correo" [(ngModel)]="participante.nombre"></ion-input>
+        <ion-input name="primerApellido" label="Primer apellido:" label-placement="floating" fill="outline" placeholder="Ingrese la contraseña" [(ngModel)]="participante.primerApellido"></ion-input>
+        <ion-input name="seundoApellido" label="Segundo apellido:" label-placement="floating" fill="outline" placeholder="Ingrese el correo" [(ngModel)]="participante.segundoApellido"></ion-input>
+        <ion-input name="correo" label="Correo:" label-placement="floating" fill="outline" placeholder="Ingrese la contraseña" [(ngModel)]="participante.correo"></ion-input>
+        
+        <ion-select name="rol" placeholder="Rol" [(ngModel)]="participante.rolId">
+          <ion-select-option *ngFor="let rol of roles ; let i = index" [value]="i+6">{{rol}}</ion-select-option>
+        </ion-select>
+
+        <ion-select name="dependencia" placeholder="Dependencia" [(ngModel)]="participante.dependenciaId">
+          <ion-select-option *ngFor="let dep of dependencias ; let i = index" [value]="i+2">{{dep}}</ion-select-option>
+        </ion-select>
+
+        <ion-select name="afiliacion" placeholder="Afiliacion" [(ngModel)]="participante.afiliacion">
+          <ion-select-option *ngFor="let afiliacion of afiliaciones ; let i = index" [value]="afiliacion">{{afiliacion}}</ion-select-option>
+        </ion-select>
+        
+        <ion-input name="contraseña" type="password" label="Contraseña:" label-placement="floating" fill="outline" placeholder="Ingrese la contraseña" [(ngModel)]="participante.contrasenia"></ion-input>
+        <ion-input name="contraseñaC" type="password" label="Confirme su contraseña:" label-placement="floating" fill="outline" placeholder="Confirme su contraseña" [(ngModel)]="passC"></ion-input>
+        
+
+        <ion-label (click)="changeModal(2)">¿Ya tienes cuenta? Inicia sesión.</ion-label>
+        
+        <ion-button type="submit">Crear cuenta</ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isModalOpen">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Nuevo evento </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setOpen(false)">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form #eventDetails="ngForm" (ngSubmit)="addEvent()">
+        <ion-input name="nombre" label="Nombre:" label-placement="floating" fill="outline" placeholder="Ingrese el nombre" [(ngModel)]="evento.nombre"></ion-input>
+        <ion-input name="descripcion" label="Descripcion:" label-placement="floating" fill="outline" placeholder="Ingrese la descripcion" [(ngModel)]="evento.descripcion"></ion-input>
+        <ion-input name="ubicacion" label="Ubicacion:" label-placement="floating" fill="outline" placeholder="Ingrese la ubicacion" [(ngModel)]="evento.ubicacion"></ion-input>
+        <ion-datetime name="fecha" [(ngModel)]="evento.fecha"></ion-datetime>
+        <ion-select name="dependencia" placeholder="Dependencia" [(ngModel)]="evento.dependenciaId">
+          <ion-select-option *ngFor="let dep of dependencias ; let i = index" [value]="i+2">{{dep}}</ion-select-option>
+        </ion-select>
+        <ion-input name="precio" label="Precio del evento:" label-placement="floating" fill="outline" placeholder="Precio por entrada" type="number" [(ngModel)]="evento.precio"></ion-input>
+        <ion-input name="asientos" label="Numero de asientos:" label-placement="floating" fill="outline" placeholder="Asientos disponibles" type="number" [(ngModel)]="evento.numeroAsiento"></ion-input>
+        <ion-select name="categoria" placeholder="Categoria" [(ngModel)]="evento.categoriaId">
+          <ion-select-option *ngFor="let cat of categorias ; let i = index" [value]="i+3">{{cat}}</ion-select-option>
+        </ion-select>
+        <ion-button type="submit">Crear evento</ion-button>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
