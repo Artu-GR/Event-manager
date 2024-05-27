@@ -137,6 +137,8 @@ export class HomePage {
     if (this.username && this.pass) {
       this.apiService.getUserInfo(this.username).subscribe((data: any) => {
         if (data.contrasenia === this.pass) {
+          this.apiService.sesionIniciada = true;
+          this.apiService.rol = data.rolId;
           this.sesionIniciada = true;
           this.setOpen2(false);
           this.userLogged = data;
@@ -166,7 +168,10 @@ export class HomePage {
   MONTH: string = '';
   CATEGORY: number = 0;
   QUERY: string = '';
+  DEPENDENCY: number = 0;
   filtered: boolean = false;
+
+  filteredEvents: Evento[] = [];
   
   filterResults() {
     this.eventos = this.eventos.filter(evento => {
@@ -174,13 +179,19 @@ export class HomePage {
       const mesAbreviadoLowerCase = evento.mes.toLowerCase();
       const mesCompletoLowerCase = this.MONTH.toLowerCase();
       const matchesMonth = !this.MONTH || this.mesesAbreviados[mesAbreviadoLowerCase] === mesCompletoLowerCase;
+
       // Filter by category
       const matchesCategory = !this.CATEGORY || evento.categoriaId === this.CATEGORY;
+
+      // Filter by dependency
+      const matchesDependency = !this.DEPENDENCY || evento.dependenciaId === this.DEPENDENCY;
+
       // Filter by query
       const matchesQuery = !this.QUERY || evento.nombre.toLowerCase().includes(this.QUERY.toLowerCase()) ||
         evento.descripcion.toLowerCase().includes(this.QUERY.toLowerCase());
+
       // Return true if all conditions are met
-      return matchesMonth && matchesCategory && matchesQuery;
+      return matchesMonth && matchesCategory && matchesDependency && matchesQuery;
     });
     this.filtered = true;
   }
@@ -193,6 +204,7 @@ export class HomePage {
 
   @ViewChild('select1') select1!: IonSelect;
   @ViewChild('select2') select2!: IonSelect;
+  @ViewChild('select3') select3!: IonSelect;
 
   getEvents(){
     this.apiService.getData().subscribe(response => {
@@ -202,12 +214,12 @@ export class HomePage {
         dia: new Date(evento.fecha).getDate()+1 // Obtener el día
       }));
     });
-    console.log(this.eventos);
     if(this.filtered){
       this.QUERY = '';
       this.filtered = false;
       this.resetIonSelector(this.select1);
       this.resetIonSelector(this.select2);
+      this.resetIonSelector(this.select3);
     }
   }
 
@@ -223,7 +235,7 @@ export class HomePage {
     return meses[numeroMes];
   }
 
-  sesionIniciada: boolean = false;
+  sesionIniciada: boolean = this.apiService.sesionIniciada;
 
   meses: any[] = [
     'Enero',

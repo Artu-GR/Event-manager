@@ -3,7 +3,7 @@ const sql = require('mssql/msnodesqlv8');
 const cors = require('cors'); // Importar el paquete cors
 const bwipjs = require('bwip-js');
 const app = express();
-const port = 3027;
+const port = 3030;
 
 // Habilitar CORS para todas las solicitudes
 app.use(cors());
@@ -153,6 +153,56 @@ sql.connect(dbConfig).then(pool => {
       
       // Enviar la respuesta con el boletoId generado
       res.json({ success: true, message: 'Boleto creado exitosamente', boletoId: result.recordset[0].boletoId });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Endpoint para actualizar el contenido de un evento
+  app.put('/api/updateEvent', async (req, res) => {
+    try {
+      const { eventoId, nombre, descripcion, ubicacion, fecha, dependenciaId, precio, numeroAsiento, categoriaId } = req.body;
+
+      // Validar que el eventoId esté presente
+      if (!eventoId) {
+        return res.status(400).json({ success: false, message: 'EventoId no proporcionado' });
+      }
+
+      // Realizar la actualización en la base de datos
+      const result = await pool.request()
+        .input('eventoId', sql.Int, eventoId)
+        .input('nombre', sql.VarChar, nombre)
+        .input('descripcion', sql.VarChar, descripcion)
+        .input('ubicacion', sql.VarChar, ubicacion)
+        .input('fecha', sql.DateTime, fecha)
+        .input('dependenciaId', sql.Int, dependenciaId)
+        .input('precio', sql.Decimal, precio)
+        .input('numeroAsiento', sql.Int, numeroAsiento)
+        .input('categoriaId', sql.Int, categoriaId)
+        .query('UPDATE evento SET nombre = @nombre, descripcion = @descripcion, ubicacion = @ubicacion, fecha = @fecha, dependenciaId = @dependenciaId, precio = @precio, numeroAsiento = @numeroAsiento, categoriaId = @categoriaId WHERE eventoId = @eventoId');
+
+      res.json({ success: true, message: 'Evento actualizado exitosamente' });
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  app.put('/api/updateUserInfo', async (req, res) => {
+    try {
+      const { userMail, MetodoPago } = req.body;
+
+      // Validar que el eventoId esté presente
+      if (!MetodoPago) {
+        return res.status(400).json({ success: false, message: 'Metodo de pago no proporcionado' });
+      }
+
+      // Realizar la actualización en la base de datos
+      const result = await pool.request()
+        .input('userMail', sql.VarChar, userMail)
+        .input('MetodoDePago', sql.Int, MetodoPago)
+        .query('UPDATE participante SET metodoPagoId = @MetodoDePago WHERE correo = @userMail');
+
+      res.json({ success: true, message: 'Metodo de pago actualizado exitosamente' });
     } catch (err) {
       res.status(500).json({ success: false, error: err.message });
     }

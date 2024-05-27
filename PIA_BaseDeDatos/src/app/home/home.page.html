@@ -18,26 +18,33 @@
 
   <ion-grid>
     <ion-row>
-      <ion-col size="12" sizeSm="6" sizeMd="3">
+      <ion-col size="12" sizeSm="6" sizeMd="2">
         <ion-item>
           <ion-select #select1 placeholder="Mes" name="MONTH" [(ngModel)]="MONTH">
             <ion-select-option *ngFor="let mes of meses ; let i = index" [value]="mes">{{mes}}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
-      <ion-col size="12" sizeSm="6" sizeMd="3">
+      <ion-col size="12" sizeSm="6" sizeMd="2">
         <ion-item>
           <ion-select #select2 placeholder="Categoria" name="CATEGORY" [(ngModel)]="CATEGORY">
             <ion-select-option *ngFor="let cat of categorias ; let i = index" [value]="i+3">{{cat}}</ion-select-option>
           </ion-select>
         </ion-item>
       </ion-col>
-      <ion-col size="12" sizeSm="6" sizeMd="3">
+      <ion-col size="12" sizeSm="6" sizeMd="2">
+        <ion-item>
+          <ion-select #select3 placeholder="Dependencia" name="DEPENDENCY" [(ngModel)]="DEPENDENCY">
+            <ion-select-option *ngFor="let dep of dependencias ; let i = index" [value]="i+2">{{dep}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col size="12" sizeSm="6" sizeMd="2">
         <ion-item>
           <ion-input placeholder="Palabra clave" name="QUERY" [(ngModel)]="QUERY"></ion-input>
         </ion-item>
       </ion-col>
-      <ion-col size="12" sizeSm="6" sizeMd="3">
+      <ion-col size="12" sizeSm="6" sizeMd="2">
         <ion-button *ngIf="!filtered" (click)="filterResults()">Buscar<ion-icon name="search" slot="end"></ion-icon></ion-button>
         <ion-button *ngIf="filtered" (click)="getEvents()">Limpiar filtros<ion-icon name="filter-outline" slot="end"></ion-icon></ion-button>
       </ion-col>
@@ -46,7 +53,6 @@
 
   <ion-grid>
     <ion-row>
-      <!--SE DEBE cat Y categorias POR evento Y eventos (SELECT * FROM EVENTOS)-->
       <ion-col *ngFor="let ev of eventos ; let i = index" value="i" size="12" sizeMd="4">
         <div class="EventCard">
           <section class="CalendarSqaure">
@@ -88,6 +94,50 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+<!--ion-grid *ngIf="filtered">
+    <ion-row>
+      <ion-col *ngFor="let ev of filteredEvents ; let i = index" value="i" size="12" sizeMd="4">
+        <div class="EventCard">
+          <section class="CalendarSqaure">
+            <div class="calendar">
+              <div class="daySquare">
+                {{ev.dia}}
+              </div>
+              <div class="monthSquare">
+                {{ev.mes}}
+              </div>
+            </div>
+          </section>
+          <ion-card>
+            <ion-card-header [routerLink]="['/event-details', ev.eventoId]">
+              {{ev.nombre}}
+            </ion-card-header>
+            <ion-card-content>
+              <section class="EventDescription">
+                <ion-label>
+                  {{ev.descripcion}}
+                </ion-label>
+              </section>
+              <section class="SocialMediaButtons">
+                <ion-buttons>
+                  <ion-button>
+                    <ion-icon name="logo-facebook"></ion-icon>
+                  </ion-button>
+                  <ion-button>
+                    <ion-icon name="logo-twitter"></ion-icon>
+                  </ion-button>
+                  <ion-button>
+                    <ion-icon name="mail-outline"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </section>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid-->
 
 </ion-content>
 

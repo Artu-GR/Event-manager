@@ -9,40 +9,42 @@
 
 <ion-content [fullscreen]="true">
   
-  <div class="left">
+  <div class="content">
 
-    <ion-title>{{event.nombre}}</ion-title>
-
-    <ion-label>{{event.descripcion}}</ion-label>
-    
-
-  </div>
-
-  <div class="right">
     <section>
-      ¿Dónde?
+      <ion-title style="font-size: x-large;"><b>{{event.nombre}}</b></ion-title>
+    </section>
+
+    <section>
+      <b>Descripción</b><br>
+      <ion-label>{{event.descripcion}}</ion-label>
+    </section>
+    <section>
+      <b>¿Dónde?</b><br>
       <ion-label>{{event.ubicacion}}</ion-label>
     </section>
     <section>
-      ¿Cuándo?
+      <b>¿Cuándo?</b><br>
       <ion-label>{{event.dia}} de {{event.mes}} - {{year}}</ion-label>
     </section>
     <section>
-      Dependencia
+      <b>Dependencia</b><br>
       <ion-label>{{dependencias[event.dependenciaId-2]}}</ion-label>
     </section>
     <section>
-      Categoria
+      <b>Categoria</b><br>
       <ion-label>{{categorias[event.categoriaId-3]}}</ion-label>
     </section>
     <section>
-      Costo
+      <b>Costo</b><br>
       <ion-label *ngIf="event.precio === 0">No tiene costo.</ion-label>
       <ion-label *ngIf="event.precio != 0">{{event.precio}}</ion-label>
     </section>
   </div>
-
+  
   <ion-button (click)="setModalOpen(true)">Registrarse al evento</ion-button>
+
+  <ion-button (click)="setOpen(true)" *ngIf="UpdateEventPermit.includes(rolId)">Administrar evento</ion-button>
 
 </ion-content>
 
@@ -62,8 +64,45 @@
 
         <ion-input name="nombre" label="Correo:" label-placement="floating" fill="outline" placeholder="Ingrese tu correo" [(ngModel)]="correoUsuario"></ion-input>
     
+        <ion-select *ngIf="event.precio != 0" name="METODODEPAGO" [(ngModel)]="METODODEPAGO" placeholder="Metodo de pago">
+          <ion-select-option value="1">Tarjeta de Crédito</ion-select-option>
+          <ion-select-option value="2">Tarjeta de Débito</ion-select-option>
+          <ion-select-option value=3>PayPal</ion-select-option>
+          <ion-select-option value="4">Pago en Oxxo</ion-select-option>
+        </ion-select>
+
         <ion-button type="submit">¡Registrarme!</ion-button>
     
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isModalOpen">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Nuevo evento </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="setOpen(false)">Close</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <form #eventDetails="ngForm" (ngSubmit)="updateEvent()">
+        <ion-input name="nombre" label="Nombre:" label-placement="floating" fill="outline" placeholder="Ingrese el nombre" [(ngModel)]="event.nombre"></ion-input>
+        <ion-input name="descripcion" label="Descripcion:" label-placement="floating" fill="outline" placeholder="Ingrese la descripcion" [(ngModel)]="event.descripcion"></ion-input>
+        <ion-input name="ubicacion" label="Ubicacion:" label-placement="floating" fill="outline" placeholder="Ingrese la ubicacion" [(ngModel)]="event.ubicacion"></ion-input>
+        <ion-datetime name="fecha" [(ngModel)]="event.fecha"></ion-datetime>
+        <ion-select name="dependencia" placeholder="Dependencia" [(ngModel)]="event.dependenciaId">
+          <ion-select-option *ngFor="let dep of dependencias ; let i = index" [value]="i+2">{{dep}}</ion-select-option>
+        </ion-select>
+        <ion-input name="precio" label="Precio del evento:" label-placement="floating" fill="outline" placeholder="Precio por entrada" type="number" [(ngModel)]="event.precio"></ion-input>
+        <ion-input name="asientos" label="Numero de asientos:" label-placement="floating" fill="outline" placeholder="Asientos disponibles" type="number" [(ngModel)]="event.numeroAsiento"></ion-input>
+        <ion-select name="categoria" placeholder="Categoria" [(ngModel)]="event.categoriaId">
+          <ion-select-option *ngFor="let cat of categorias ; let i = index" [value]="i+3">{{cat}}</ion-select-option>
+        </ion-select>
+        <ion-button type="submit">Actualizar evento</ion-button>
       </form>
     </ion-content>
   </ng-template>

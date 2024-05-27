@@ -28,6 +28,7 @@ export class EventDetailsPage implements OnInit {
   ngOnInit() {
     this.getEventInfo();
   }
+  rolId: number = this.apiService.rol;
 
   eventId: number = parseInt(this.route.snapshot.params['id']);
 
@@ -64,13 +65,26 @@ export class EventDetailsPage implements OnInit {
 
   isOpen = false;
 
+  sesionIniciada: boolean = this.apiService.sesionIniciada;
+
   setModalOpen(type: boolean){
     this.isOpen = type;
   }
 
   correoUsuario: string = '';
+  METODODEPAGO: number = 0;
 
   registroEvento() {
+
+    if(!this.apiService.sesionIniciada){
+      alert("Inicie sesion para continuar con el registro")
+      return;
+    }
+
+    if(this.METODODEPAGO === 0 && this.event.precio != 0){
+      alert("Debe seleccionar un metodo de pago valido");
+      return;
+    }
     this.apiService.createTicket(this.eventId, this.correoUsuario, this.event.precio).subscribe(response => {
       console.log('Ticket creado:', response);
       // Aquí puedes agregar la lógica adicional para manejar la respuesta, como mostrar una notificación al usuario
@@ -78,7 +92,31 @@ export class EventDetailsPage implements OnInit {
       console.error('Error al crear el ticket', error);
       // Aquí puedes agregar la lógica adicional para manejar errores
     });
+    this.apiService.updateUserInfo(this.correoUsuario, this.METODODEPAGO).subscribe(response => {
+      console.log("Metodo de pago definido exitosamente", response);
+    }, error => {
+      console.error("Error al actualizar el metodo de pago", error);
+    })
+
     this.setModalOpen(false);
+  }
+
+  isModalOpen: boolean = false;
+  setOpen(type: boolean){
+    this.isModalOpen = type;
+  }
+
+  updateEvent(){
+    this.apiService.updateEvent(this.event).subscribe(
+      response => {
+        console.log('Evento actualizado exitosamente:', response);
+      },
+      error => {
+        console.error('Error al actualizar el evento:', error);
+      }
+    );
+
+    this.setOpen(false);
   }
 
   year: number = new Date(this.event.fecha).getFullYear();
@@ -198,6 +236,8 @@ export class EventDetailsPage implements OnInit {
     'Escuela y Preparatoria Técnica Médica',
     'Centro de Investigación y Desarrollo de Educación Bilingüe – CIDEB'
   ]
+
+  UpdateEventPermit: any[] = [6, 7];
 
 
 }

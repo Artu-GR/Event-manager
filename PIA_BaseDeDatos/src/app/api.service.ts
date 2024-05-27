@@ -7,9 +7,12 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
-  private apiUrl = 'http://localhost:3027/api';
+  private apiUrl = 'http://localhost:3030/api';
 
   constructor(private http: HttpClient) { }
+
+  sesionIniciada: boolean = false;
+  rol: number = 0;
 
   getData(): Observable<any> {
     return this.http.get<any>(this.apiUrl+'/data');
@@ -35,4 +38,14 @@ export class ApiService {
     const body = { eventoId, userMail, precio };
     return this.http.post<any>(this.apiUrl+'/createTicket', body);
   }
+
+  updateEvent(evento: any): Observable<any> {
+    return this.http.put<any>(this.apiUrl+'/updateEvent', evento)
+  }
+
+  updateUserInfo(userMail: string, MetodoPago: number){
+    const body = {userMail, MetodoPago};
+    return this.http.put<any>(this.apiUrl+'/updateUserInfo', body)
+  }
+
 }
